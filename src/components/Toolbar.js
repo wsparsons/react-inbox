@@ -1,11 +1,8 @@
-import React, { Component } from 'react'
+import React from 'react'
 
-class Toolbar extends Component {
-  constructor (props){
-    super(props)
-  }
+const Toolbar = ({ readMessages, unreadMessages, checkAll, deleteMessages, applyLabels, removeLabels, toggleCompose, messages }) => {
 
-  checkIcon = (messages) => {
+  const checkIcon = (messages) => {
     const allMessages = messages.every(message => message.selected === true)
     const someMessages = messages.some(message => message.selected === true)
 
@@ -14,66 +11,65 @@ class Toolbar extends Component {
     else return `fa fa-square-o`
   }
 
-  countMessages = (messages) => {
-    let counter = 0
-    messages.map(message => {
-      if(message.read === false)
-      counter++
-    })
+  const countMessages = (messages) => {
+    let counter = messages.reduce((total, message) => {
+      if(message.read === false ) total++
+      return total
+    }, 0)
     return counter;
   }
 
-  disableIcon = (messages) => {
-    const allMessages = messages.every(message => message.selected === undefined)
-    console.log(allMessages);
+  const disableIcon = (messages) => {
+    const allMessages = messages.every(message => message.selected === false)
 
     if(allMessages) return true
     else return false
   }
 
-  render () {
+  return (
+    <div className="row toolbar">
+      <div className="col-md-12">
+        <p className="pull-right">
+          <span className="badge badge">{ countMessages(messages)}</span>
+          unread message{countMessages(messages) !== 1 ? 's' : ''}
+        </p>
 
-    return (
-      <div className="row toolbar">
-        <div className="col-md-12">
-          <p className="pull-right">
-            <span className="badge badge">{ this.countMessages(this.props.messages)}</span>
-            unread message{this.countMessages(this.props.messages) !== 1 ? 's' : ''}
-          </p>
+        <a onClick={ toggleCompose } className="btn btn-danger">
+          <i className="fa fa-plus"></i>
+        </a>
 
-          <button onClick={ this.props.checkAll } className="btn btn-default">
-            <i className={this.checkIcon(this.props.messages)}></i>
-          </button>
+        <button onClick={ checkAll } className="btn btn-default">
+          <i className={checkIcon(messages)}></i>
+        </button>
 
-          <button onClick={ this.props.readMessages } className="btn btn-default" disabled={this.disableIcon(this.props.messages)} >
-            Mark As Read
-          </button>
+        <button onClick={ readMessages } className="btn btn-default" disabled={disableIcon(messages)} >
+          Mark As Read
+        </button>
 
-          <button onClick={ this.props.unreadMessages } className="btn btn-default" disabled={this.disableIcon(this.props.messages)}>
-            Mark As Unread
-          </button>
+        <button onClick={ unreadMessages } className="btn btn-default" disabled={disableIcon(messages)}>
+          Mark As Unread
+        </button>
 
-          <select onChange={ this.props.applyLabels } className="form-control label-select" disabled={this.disableIcon(this.props.messages)}>
-            <option>Apply label</option>
-            <option value="dev">dev</option>
-            <option value="personal">personal</option>
-            <option value="gschool">gschool</option>
-          </select>
+        <select onChange={ applyLabels } className="form-control label-select" disabled={disableIcon(messages)}>
+          <option>Apply label</option>
+          <option value="dev">dev</option>
+          <option value="personal">personal</option>
+          <option value="gschool">gschool</option>
+        </select>
 
-          <select onChange={ this.props.removeLabels } className="form-control label-select" disabled={this.disableIcon(this.props.messages)}>
-            <option>Remove label</option>
-            <option value="dev">dev</option>
-            <option value="personal">personal</option>
-            <option value="gschool">gschool</option>
-          </select>
+        <select onChange={ removeLabels } className="form-control label-select" disabled={disableIcon(messages)}>
+          <option>Remove label</option>
+          <option value="dev">dev</option>
+          <option value="personal">personal</option>
+          <option value="gschool">gschool</option>
+        </select>
 
-          <button onClick={ this.props.deleteMessages }className="btn btn-default" disabled={this.disableIcon(this.props.messages)}>
-            <i className="fa fa-trash-o"></i>
-          </button>
-        </div>
+        <button onClick={ deleteMessages } className="btn btn-default" disabled={disableIcon(messages)}>
+          <i className="fa fa-trash-o"></i>
+        </button>
       </div>
-    )
-  }
+    </div>
+  )
 }
 
 export default Toolbar
